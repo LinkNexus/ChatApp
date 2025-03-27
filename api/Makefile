@@ -40,3 +40,6 @@ subscriber:
 
 consume:
 	$(sy) messenger:consume async -vv
+
+debug-subscriber:
+	$(sy) debug:event-dispatcher

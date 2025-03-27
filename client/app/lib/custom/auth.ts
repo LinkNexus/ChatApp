@@ -12,7 +12,6 @@ export enum AuthStatus {
 
 export function useAuth() {
     const user = useStore.use.user();
-    const email = useStore.use.email();
     const setUser = useStore.getState().setUser;
 
     let status = AuthStatus.Unknown;

@@ -6,7 +6,7 @@ import { Pencil } from "lucide-react";
 import { useStore } from "~/store";
 import { Navigate, useNavigate } from "react-router";
 import LoadingButton from "~/components/custom/forms/loading-button";
-import type { User, UserCreate } from "~/types";
+import type { UserCreate } from "~/types";
 import { useState } from "react";
 import { ApiError } from "~/lib/custom/fetch";
 import { formErrors } from "~/lib/custom/utils";

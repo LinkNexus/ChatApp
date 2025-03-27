@@ -6,12 +6,8 @@ import { useEffect, type PropsWithChildren } from "react";
 export default function ({ children }: PropsWithChildren) {
     const { status, authenticate } = useAuth();
 
-    console.log(status);
-
     useEffect(() => {
-        if (status === AuthStatus.Unknown) {
-            authenticate();
-        }
+        authenticate();
     }, [status])
 
     return (
