@@ -76,6 +76,12 @@ final class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['read.user'])]
     public ?bool $isVerified = false;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $githubId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $googleId = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -171,6 +177,30 @@ final class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(?bool $isVerified): User
     {
         $this->isVerified = $isVerified;
+        return $this;
+    }
+
+    public function getGithubId(): ?string
+    {
+        return $this->githubId;
+    }
+
+    public function setGithubId(?string $githubId): static
+    {
+        $this->githubId = $githubId;
+
+        return $this;
+    }
+
+    public function getGoogleId(): ?string
+    {
+        return $this->googleId;
+    }
+
+    public function setGoogleId(?string $googleId): static
+    {
+        $this->googleId = $googleId;
+
         return $this;
     }
 }

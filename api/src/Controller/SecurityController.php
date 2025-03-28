@@ -7,10 +7,12 @@ use App\Entity\User;
 use App\Security\EmailVerifier;
 use App\Service\OTP\OTPService;
 use Doctrine\ORM\EntityManagerInterface;
+use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
@@ -148,6 +150,16 @@ final class SecurityController extends AbstractController
         }
 
         $this->addFlash('success', 'Your email has been verified.');
-        return $this->redirect("$domain/auth/login");
+        return $this->redirect("$domain/auth");
+    }
+
+    #[Route("/connect/{service}")]
+    public function connect(ClientRegistry $clientRegistry, string $service): RedirectResponse
+    {
+        if ($service === 'github') $scopes = ["user:email", "read:user"];
+        else $scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'];
+
+        $client = $clientRegistry->getClient($service);
+        return $client->redirect($scopes);
     }
 }
