@@ -17,6 +17,8 @@ final class AppController extends AbstractController
 
     ): JsonResponse
     {
+        $request->getSession()->getFlashBag()->add('success', 'Hello');
+
         if (null === $key) {
             return $this->json($request->getSession()->getFlashBag()->all());
         }

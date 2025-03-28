@@ -136,7 +136,7 @@ final class SecurityController extends AbstractController
     }
 
     #[Route('/verify/email', name: 'verify.email')]
-    public function verifyUserEmail(Request $request, #[Autowire('%env(FRONTEND_DOMAIN)%')] string $domain)
+    public function verifyUserEmail(Request $request, #[Autowire('%env(FRONTEND_DOMAIN)%')] string $domain): RedirectResponse
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 

@@ -38,7 +38,7 @@ final class OTPAuthenticator extends AbstractAuthenticator
     public function authenticate(Request $request): Passport
     {
         $data = json_decode($request->getContent());
-        $otp = json_decode($request->getContent())->otp;
+        $otp = $data->otp;
         $userIdentifier = $data->email;
 
         if (null === $otp) {
