@@ -1,5 +1,5 @@
 import {useCallback, useState} from "react";
-const endpoint = "http://levynkeneng-2.tail6ac1e7.ts.net";
+const endpoint = import.meta.env.VITE_API_ENDPOINT
 
 export class ApiError extends Error {
     constructor(public status: number, public data: Record<string, unknown>, public url: string) {

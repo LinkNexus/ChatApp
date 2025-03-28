@@ -2,7 +2,6 @@
 
 namespace App\EventSubscriber;
 
-use ApiPlatform\Symfony\EventListener\EventPriorities;
 use App\Entity\User;
 use App\Security\EmailVerifier;
 use App\Security\OTPAuthenticator;

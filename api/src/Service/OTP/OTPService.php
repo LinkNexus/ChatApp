@@ -11,7 +11,6 @@ final class OTPService
 {
     private ?Otp $otp = null;
 
-
     public function __construct(
         #[Autowire('kernel.project_dir')] private string $projectDir
     )

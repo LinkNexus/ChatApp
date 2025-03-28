@@ -14,6 +14,7 @@ final class AppController extends AbstractController
     public function flash(
         Request $request,
         #[MapQueryParameter] $key = null,
+
     ): JsonResponse
     {
         if (null === $key) {

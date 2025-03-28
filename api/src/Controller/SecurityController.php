@@ -85,7 +85,7 @@ final class SecurityController extends AbstractController
                 (new TemplatedEmail())
                     ->from(new Address('noreply@instachat.com', 'InstaChat Team'))
                     ->to($email)
-                    ->subject('Authentification to InstaChat')
+                    ->subject('Authentication to InstaChat')
                     ->htmlTemplate('auth/otp_email.html.twig')
                     ->context([
                         'otp' => $otp,
