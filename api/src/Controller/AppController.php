@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class AppController extends AbstractController
 {
-    #[Route('/flashes', name: 'app_app', methods: ['GET'])]
+    #[Route('/flashes', methods: ['GET'])]
     public function flash(
         Request $request,
         #[MapQueryParameter] $key = null,
