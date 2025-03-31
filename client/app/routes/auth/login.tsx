@@ -53,7 +53,12 @@ export default function () {
                 <span>
                     Enter the One Time Password sent to you by email in order to authenticate to our website
                 </span>
-                {time > 0 ? <span>Resend OTP in {time} seconds</span> : <a onClick={() => generateOTP} href="#" className="text-balance text-center text-muted-foreground hover:underline hover:underline-offset-4 hover:text-primary">Resend OTP</a>}
+                {time > 0 ? <span>Resend OTP in {time} seconds</span> : <a 
+                    onClick={(e) => { e.preventDefault(); generateOTP() }} 
+                    href="#" 
+                    className="text-balance text-center text-muted-foreground hover:underline hover:underline-offset-4 hover:text-primary">
+                        Resend OTP
+                    </a>}
             </Header>
 
             <AjaxForm 

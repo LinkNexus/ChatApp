@@ -43,3 +43,6 @@ consume:
 
 debug-subscriber:
 	$(sy) debug:event-dispatcher
+
+fixture:
+	$(sy) make:fixture

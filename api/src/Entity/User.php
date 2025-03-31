@@ -22,11 +22,11 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(
             normalizationContext: ['groups' => ['read.user']],
-//            security: "object == user"
+            security: "object == user"
         ),
         new GetCollection(
             normalizationContext: ['groups' => ['read.users']],
-//            security: "is_granted('ROLE_USER')"
+            security: "is_granted('ROLE_USER')"
         ),
         new Post(
             normalizationContext: ['groups' => ['read.user']],

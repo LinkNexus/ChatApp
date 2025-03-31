@@ -7,7 +7,11 @@ export class ApiError extends Error {
     }
 }
 
-export async function apiFetch<T>(url: string, params: (Omit<RequestInit, 'body'> & { data?: Record<string, unknown>}) = {}) {
+export interface ApiFetchParams extends Omit<RequestInit, 'body'> {
+    data?: Record<string, any>;
+}
+
+export async function apiFetch<T>(url: string, params: ApiFetchParams = {}) {
     params.method ??= params.data ? 'POST' : 'GET';
     const body = params.data ? JSON.stringify(params.data) : undefined;
     const res = await fetch(endpoint + url, {
@@ -39,24 +43,24 @@ export function jsonLdFetch<T>(url: string, params: (Omit<RequestInit, 'body'> &
     });
 }
 
-export function useApiFetch<T>(url: string, params: Omit<RequestInit, "body"> = {}, ld: boolean = false) {
+export function useApiFetch<T>(url: string, params: Omit<ApiFetchParams, "data">, ld: boolean = false) {
     const [error, setError] = useState<ApiError|null>(null);
     const [loading, setLoading] = useState<boolean>(false);
 
-    const load = useCallback(async function (data: Record<string, any>) {
+    const load = useCallback(async function (data?: Record<string, any>) {
         setLoading(true);
 
         try {
             if (ld) {
                 return await jsonLdFetch<T>(url, {
                     data: data,
-                    headers: params.headers
+                    ...params
                 });
             }
 
             return await apiFetch<T>(url, {
                 data: data,
-                headers: params.headers
+                ...params
             })
         } catch (e) {
             setError(e as ApiError);

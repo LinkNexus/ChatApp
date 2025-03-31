@@ -13,6 +13,7 @@ export enum AuthStatus {
 export function useAuth() {
     const user = useStore.use.user();
     const setUser = useStore.getState().setUser;
+    const email = useStore.use.email();
 
     let status = AuthStatus.Unknown;
 
@@ -37,7 +38,9 @@ export function useAuth() {
     }, [setUser]);
 
     const generateOTP = useCallback(function () {
-        apiFetch<User>("/auth/generate-otp");
+        apiFetch<User>("/auth/token/generate", {
+            data: { email }
+        });
     }, [])
 
     return {

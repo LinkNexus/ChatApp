@@ -10,4 +10,5 @@ export default [
             route("/register", "routes/auth/register.tsx"),
         ])
     ),
+    route("/inbox", "routes/conversations/inbox.tsx"),
 ] satisfies RouteConfig;

@@ -14,15 +14,13 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // $product = new Product();
-        // $manager->persist($product);
+        for ($i = 0; $i < 10; $i++) {
+            $user = new User();
+            $user->setEmail('user' . $i . '@example.com')
+                ->setName(sprintf('User %s', $i));
 
-        $user = new User();
-        $user->setEmail('user1@example.com')
-            ->setName('User 1')
-            ->setPassword($this->hasher->hashPassword($user, 'password'));
-
-        $manager->persist($user);
+            $manager->persist($user);
+        }
         $manager->flush();
     }
 }
