@@ -21,6 +21,8 @@ services:
       # Ensure that host.docker.internal is correctly defined on Linux
       - host.docker.internal:host-gateway
     tty: true
+    labels:
+      - "traefik.http.routers.php.rule=Host(`server.instachat.localhost`)"
 
 
 ###> symfony/mercure-bundle ###

@@ -1,0 +1,15 @@
+services:
+  client:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.client.loadbalancer.server.port=3000"
+    environment:
+      - NEXT_PUBLIC_API_ENDPOINT=${SERVER_ENDPOINT:-http://client.instachat.localhost}
+      - API_URL=http://php
+    networks:
+      - instachat-network
+
+networks:
+  instachat-network:
+    name: instachat-network
+    external: true

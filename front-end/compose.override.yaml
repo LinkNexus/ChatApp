@@ -1,0 +1,15 @@
+services:
+  client:
+    build:
+      target: node_dev
+    labels:
+      - "traefik.http.routers.client.rule=Host(`client.instachat.localhost`)"
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json

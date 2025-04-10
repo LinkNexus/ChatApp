@@ -42,13 +42,13 @@ final class SecurityController extends AbstractController
             'email' => $email,
         ]);
 
-        if ($user instanceof User) {
-            try {
-                $this->sendOTP($email);
-            } catch (TransportExceptionInterface $exception) {
-                return $this->json(['error' => $exception->getMessage()], status: Response::HTTP_INTERNAL_SERVER_ERROR);
-            }
-        }
+//        if ($user instanceof User) {
+//            try {
+//                $this->sendOTP($email);
+//            } catch (TransportExceptionInterface $exception) {
+//                return $this->json(['error' => $exception->getMessage()], status: Response::HTTP_INTERNAL_SERVER_ERROR);
+//            }
+//        }
 
         return $this->json(['isRegistered' => $user !== null]);
     }
