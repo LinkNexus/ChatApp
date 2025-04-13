@@ -1,31 +1,22 @@
 import { createStore } from 'zustand';
-import { combine, persist } from 'zustand/middleware';
+import { combine, createJSONStorage, persist } from 'zustand/middleware';
 import { User } from './types';
 
 interface AppState {
-    user: User | undefined | null;
     email: string;
+    otpTimeLeft: number;
 }
 
 interface AppActions {
-    setUser: (user: User | null) => void;
     setEmail: (email: string) => void;
+    setOTPTimeLeft: (timeLeft: number) => void;
 }
 
 export type AppStore = AppState & AppActions;
 
 const defaultInitState: AppState = {
-    user: undefined as User | undefined | null,
-    email: (function () {
-        if (typeof window !== 'undefined') {
-            const accountJSON = localStorage.getItem("instachat");
-            if (accountJSON) {
-                return JSON.parse(accountJSON).email || '';
-            }
-        }
-
-        return '';
-    })()
+    email: '',
+    otpTimeLeft: 0,
 }
 
 export const createAppStore = (
@@ -36,12 +27,23 @@ export const createAppStore = (
             combine(
                 initialState,
                 (set) => ({
-                    setUser: (user: User | null) => ({ user: user }),
-                    setEmail: (email: string) => ({ email })
+                    setEmail: (email: string) => {
+                        set((state) => ({
+                            ...state,
+                            email: email,
+                        }))
+                    },
+                    setOTPTimeLeft: (timeLeft: number) => {
+                        set((state) => ({
+                            ...state,
+                            otpTimeLeft: timeLeft,
+                        }))
+                    }
                 })
             ),
             {
-                name: 'instachat'
+                name: 'instachat',
+                storage: createJSONStorage(() => localStorage),
             }
         )
     );

@@ -5,24 +5,29 @@ export class ApiError extends Error {
     }
 }
 
-export async function apiFetch<T>(url: string, params: Omit<RequestInit, "body"> & { data?: Record<string, any> } = {}, ld = false) {
-    const endpoint = process.env.NEXT_PUBLIC_API_ENDPOINT || "server.instachat.localhost";
+export async function apiFetch<T>(url: string, params: Omit<RequestInit, "body"> & { data?: Record<string, any>, ssr?: boolean, ld?: boolean  } = {}) {
+    const { data, ssr, ld, ...options } = params;
+    const endpoint = ssr ? process.env.API_ENDPOINT : process.env.NEXT_PUBLIC_API_ENDPOINT || "http://server.instachat.localhost";
     const format = ld ? 'application/ld+json' : 'application/json'; 
-    const { data, ...options } = params;
+    const body = data ? JSON.stringify(data) : undefined;
+    const method = params.method || data ? 'POST' : 'GET';
+    const headers = {
+        'Content-Type': format,
+        'Accept': format,
+        ...options.headers
+    };
 
     try {
         const res = await fetch(endpoint + url, {
-            method: params.method || params.data ? 'POST' : 'GET',
-            body: data ? JSON.stringify(data) : undefined,
-            headers: {
-                'Content-Type': format,
-                'Accept': format,
-                ...options.headers
-            },
+            method,
+            body,
+            headers,
+            credentials: 'include',
             ...options
         });
 
         if (!res.ok) {
+            console.log(await res.json());
             throw new ApiError(await res.json(), res.status);
         }
 

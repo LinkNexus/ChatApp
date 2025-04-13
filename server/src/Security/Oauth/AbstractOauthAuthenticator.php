@@ -24,7 +24,7 @@ abstract class AbstractOauthAuthenticator extends OAuth2Authenticator
     public function __construct(
         private readonly ClientRegistry $clientRegistry,
         private readonly EntityManagerInterface $entityManager,
-        #[Autowire('%env(DOMAIN_URL)%')] private readonly string $domainUrl
+        #[Autowire('%env(CLIENT_URL)%')] private readonly string $clientUrl
     )
     {}
 
@@ -80,11 +80,11 @@ abstract class AbstractOauthAuthenticator extends OAuth2Authenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        return new RedirectResponse($this->domainUrl);
+        return new RedirectResponse($this->clientUrl);
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        return new RedirectResponse("{$this->domainUrl}/auth");
+        return new RedirectResponse("{$this->clientUrl}/auth");
     }
 }

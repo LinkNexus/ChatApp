@@ -1,3 +1,5 @@
+.PHONY: cache-clear composer-install fixtures-load controller build run migration migrate fix-perm entity subscriber consume debug-subscriber fixture
+
 php := docker compose exec php
 sy := $(php) bin/console
 
@@ -18,7 +20,6 @@ build:
 	docker compose build --no-cache
 
 run:
-	sudo systemctl stop nginx
 	SERVER_NAME=http://levynkeneng-2.tail6ac1e7.ts.net \
     MERCURE_PUBLIC_URL=http://levynkeneng-2.tail6ac1e7.ts.net/.well-known/mercure \
     docker compose up --pull always -d --wait
@@ -36,7 +37,7 @@ entity:
 	$(sy) make:entity
 
 subscriber:
-	$(sy) make:subscriber
+	$(sy) make:listener
 
 consume:
 	$(sy) messenger:consume async -vv

@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAppStore } from "@/store-provider";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
+import {useAuth} from "@/lib/custom/auth";
 
 enum RegistrationStatus {
     Unknown = 'unknown',
@@ -16,7 +17,8 @@ enum RegistrationStatus {
 }
 
 export default function Page() {
-    const { email } = useAppStore(state => state);
+    const { email, setEmail, setOTPTimeLeft } = useAppStore(state => state);
+    const { user } = useAuth();
     const [status, setStatus] = useState<RegistrationStatus>(RegistrationStatus.Unknown);
     const router = useRouter();
 
@@ -26,10 +28,21 @@ export default function Page() {
         } else {
             setStatus(RegistrationStatus.NotRegistered);
         }
+        setOTPTimeLeft(60);
+    }, []);
+
+    const onSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
+        const formData = new FormData(e.currentTarget);
+        setEmail(formData.get('email')!.toString());
     }, []);
 
     useEffect(() => {
-        console.log('Status changed', status);
+        if (user) {
+            router.push('/');
+        }
+    }, [user, router]);
+
+    useEffect(() => {
         if (status === RegistrationStatus.Registered) {
             router.push('/auth/login');
         } else if (status === RegistrationStatus.NotRegistered) {
@@ -45,7 +58,7 @@ export default function Page() {
                 </span>
             </AuthHeader>
 
-            <AjaxForm onResponse={onResponse} action="/auth/is-registered" className="flex flex-col gap-6">
+            <AjaxForm onSubmit={onSubmit} onResponse={onResponse} action="/auth/is-registered" className="flex flex-col gap-6">
                 <div className="grid gap-2">
                     <Label htmlFor="email">Email</Label>
                     <Input defaultValue={email} type="email" id="email" name="email" placeholder="john@doe.com" />

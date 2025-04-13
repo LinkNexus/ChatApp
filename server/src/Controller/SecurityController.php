@@ -5,11 +5,13 @@ namespace App\Controller;
 use App\Entity\OTPRequest;
 use App\Entity\User;
 use App\Security\EmailVerifier;
+use App\Security\OTPAuthenticator;
 use App\Service\OTP\OTPService;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -20,6 +22,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 #[Route('/auth', name: 'auth.')]
@@ -42,13 +45,13 @@ final class SecurityController extends AbstractController
             'email' => $email,
         ]);
 
-//        if ($user instanceof User) {
-//            try {
-//                $this->sendOTP($email);
-//            } catch (TransportExceptionInterface $exception) {
-//                return $this->json(['error' => $exception->getMessage()], status: Response::HTTP_INTERNAL_SERVER_ERROR);
-//            }
-//        }
+        if ($user instanceof User) {
+            try {
+                $this->sendOTP($email);
+            } catch (TransportExceptionInterface $exception) {
+                return $this->json(['error' => $exception->getMessage()], status: Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+        }
 
         return $this->json(['isRegistered' => $user !== null]);
     }
@@ -136,7 +139,7 @@ final class SecurityController extends AbstractController
     }
 
     #[Route('/verify/email', name: 'verify.email')]
-    public function verifyUserEmail(Request $request, #[Autowire('%env(FRONTEND_DOMAIN)%')] string $domain): RedirectResponse
+    public function verifyUserEmail(Request $request, #[Autowire('%env(CLIENT_URL)%')] string $domain): RedirectResponse
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
@@ -161,5 +164,43 @@ final class SecurityController extends AbstractController
 
         $client = $clientRegistry->getClient($service);
         return $client->redirect($scopes);
+    }
+
+    #[Route('/register', name: 'register', methods: ['POST'])]
+    public function register(
+        Request $request,
+        HttpClientInterface $client,
+        EmailVerifier $verifier,
+        Security $security
+    ): Response {
+        $url = $request->getSchemeAndHttpHost() . '/api/users';
+        $response = $client->request('POST', $url, [
+            'body' => $request->getContent(),
+            'headers' => [
+                'Content-Type' => 'application/ld+json',
+                'Accept' => 'application/ld+json'
+            ]
+        ]);
+
+        if ($response->getStatusCode() !== Response::HTTP_CREATED) {
+            return $this->json($response->getContent(), $response->getStatusCode(), $response->getHeaders());
+        }
+
+        $responseContent = json_decode($response->getContent(), true);
+
+        /** @var User $user */
+        $user = $this->entityManager->getRepository(User::class)
+            ->find($responseContent['id']);
+
+        $verifier->sendEmailConfirmation(
+            'auth.verify.email',
+            $user,
+            (new TemplatedEmail())
+                ->to(new Address($user->getEmail(), $user->getName()))
+                ->subject('Registration confirmation to InstaChat')
+                ->htmlTemplate('auth/registration_email.html.twig')
+        );
+
+        return $security->login($user, OTPAuthenticator::class);
     }
 }

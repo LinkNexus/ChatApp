@@ -26,24 +26,26 @@ export function AjaxForm<T,>({
     const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
-        if (loading && handleLoading) handleLoading(loading); 
+        if (loading && handleLoading) handleLoading(loading);
     })
 
     async function handleAction(formData: FormData) {
         setLoading(true);
         try {
-            const response = await apiFetch(
-                action,
-                {
-                    method,
-                    data: {
-                        ...Object.fromEntries(formData.entries()),
-                        ...additionalData
-                    }
+            const response = await apiFetch(action, {
+                method,
+                data: {
+                    ...Object.fromEntries(formData.entries()),
+                    ...additionalData
                 },
-                ld
-            );
-            
+                ld,
+                ssr: false,
+                // headers: {
+                //     'Content-Type': 'text/html',
+                //     'Accept': 'text/html'
+                // }
+            });
+
             if (onResponse) onResponse(response as T);
         } catch (error) {
             if (error instanceof ApiError && onRequestError) {
