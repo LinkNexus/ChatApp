@@ -13,9 +13,9 @@ import { NavUser } from "./nav-user";
 
 const navItems = [
     {
-        title: 'Ibox',
+        title: 'Discussions',
         icon: MessageSquareText,
-        url: "/inbox",
+        url: "/",
     },
     {
         title: 'Stories',

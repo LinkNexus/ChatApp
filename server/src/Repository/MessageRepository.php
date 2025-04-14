@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Message;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -14,6 +15,20 @@ class MessageRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Message::class);
+    }
+
+    public function findAllByDiscussion(int $authorId, int $receiverId, int $offset = 0, int $limit = 10) {
+        return $this->createQueryBuilder('m')
+            ->where('(m.author = :authorId AND m.receiver = :receiverId) OR (m.author = :receiverId AND m.receiver = :authorId)')
+            ->setParameters(new ArrayCollection([
+                'authorId' => $authorId,
+                'receiverId' => $receiverId
+            ]))
+            ->orderBy('m.createdAt', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
     }
 
 //    /**

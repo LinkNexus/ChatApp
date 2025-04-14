@@ -3,14 +3,24 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\MessageRepository;
+use App\State\DiscussionMessagesProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: '/discussions/messages',
+            security: 'is_granted("ROLE_USER")',
+            provider: DiscussionMessagesProvider::class,
+        )
+    ]
+)]
 class Message
 {
     #[ORM\Id]

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -25,6 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: "object == user"
         ),
         new GetCollection(
+            paginationItemsPerPage: 10,
             normalizationContext: ['groups' => ['read.users']],
             security: "is_granted('ROLE_USER')"
         ),
@@ -35,8 +38,9 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Delete()
     ]
 )]
+#[ApiFilter(OrderFilter::class, properties: ['name'], arguments: ['orderParameterName' => 'order'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already a user with this email')]
-final class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -81,6 +85,10 @@ final class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $googleId = null;
+
+    #[ORM\Column(length: 240, nullable: true)]
+    #[Groups(['read.user', 'update.user', 'read.users'])]
+    private ?string $bio = null;
 
     public function getId(): ?int
     {
@@ -200,6 +208,18 @@ final class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setGoogleId(?string $googleId): static
     {
         $this->googleId = $googleId;
+
+        return $this;
+    }
+
+    public function getBio(): ?string
+    {
+        return $this->bio;
+    }
+
+    public function setBio(?string $bio): static
+    {
+        $this->bio = $bio;
 
         return $this;
     }
