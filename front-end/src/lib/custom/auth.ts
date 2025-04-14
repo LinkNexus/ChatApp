@@ -1,5 +1,5 @@
 import { User } from "@/types";
-import {useCallback, useState} from "react";
+import {useCallback} from "react";
 import {apiFetch} from "./fetch";
 import { useAppStore } from "@/store-provider";
 import {toast} from "sonner";
@@ -11,8 +11,7 @@ export enum AuthStatus {
 }
 
 export function useAuth() {
-    const [user, setUser] = useState<User | null | undefined>(undefined);
-    const { setOTPTimeLeft, email } = useAppStore(state => state);
+    const { user, setUser, setOTPTimeLeft, email } = useAppStore(state => state);
     let status: AuthStatus;
 
     switch (user) {
@@ -29,11 +28,11 @@ export function useAuth() {
 
     const authenticate = useCallback(async function () {
         try {
-            setUser(await apiFetch<User>("/auth/me"));
+            setUser(await apiFetch<User>("/auth/me") as User);
         } catch (error) {
             setUser(null);
         }
-    }, []);
+    }, [setUser]);
 
     const logout = useCallback(async function (){
         await apiFetch<void>("/auth/logout");

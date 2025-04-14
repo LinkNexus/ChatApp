@@ -13,14 +13,17 @@ export default function Layout ({ children }: PropsWithChildren) {
         authenticate();
     }, []);
 
+    useEffect(() => {
+        if (status === AuthStatus.Unauthenticated) router.push('/auth');
+    }, [status, router]);
+
     switch (status) {
         case AuthStatus.Unknown:
             return <div className='h-screen w-screen flex items-center justify-center'>
                 <LoadingSpinner size={50} />
             </div>;
         case AuthStatus.Unauthenticated:
-            router.push('/auth');
-            break;
+            return null;
         case AuthStatus.Authenticated:
             return children;
     }
